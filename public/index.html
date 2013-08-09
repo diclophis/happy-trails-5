@@ -26,7 +26,7 @@
         top: 102px;
       }
       #level div.animating {
-        transition: all 5s;
+        transition: all 1s;
         top: 0;
         left: 0;
       }
@@ -35,47 +35,32 @@
       }
     </style>
     <script>
-      var leftRightMaker = function(leftOrRight) {
-        return function(id) {
-          var div = document.getElementById(id);
-          var odd = leftOrRight ? div.nextSibling : div.previousSibling;
-          var insertBeforeNode = leftOrRight ? div : div.nextSibling;
-          div.className = leftOrRight ? "left" : "right";
-          odd.className = leftOrRight ? "right" : "left";
-          div.parentNode.replaceChild(div, odd);
-          div.parentNode.insertBefore(odd, insertBeforeNode);
-          setTimeout(function() {
-            div.className = "animating";
-            odd.className = "animating";
-          }, 0);
-          return odd;
-        };
-      };
-      var upDownMaker = function(upOrDown) {
+      var upDownMaker = function(upOrDown, verticalOrHorizontal) {
         return function(id) {
           var div = document.getElementById(id);
           var k = 0;
           var e = div;
           while (e = e.previousSibling) { ++k;}
-          var odd = upOrDown ? div.parentNode.children.item(k + 3) : div.parentNode.children.item(k - 3);
-          var insertBeforeNode = upOrDown ? div.nextSibling : div.nextSibling;
-          div.className = "";
-          odd.className = "";
-          div.className = upOrDown ? "up" : "down";
-          odd.className = upOrDown ? "down" : "up";
-          div.parentNode.replaceChild(div, odd);
-          div.parentNode.insertBefore(odd, insertBeforeNode);
-          setTimeout(function() {
-            div.className = "animating";
-            odd.className = "animating";
-          }, 0);
-          return odd;
+          var a = verticalOrHorizontal ? 3 : 1;
+          var odd = verticalOrHorizontal ? (upOrDown ? div.parentNode.children.item(k - a) : div.parentNode.children.item(k + a)) : (upOrDown ? div.parentNode.children.item(k + a) : div.parentNode.children.item(k - a));
+          var insertBeforeNode = verticalOrHorizontal ? (upOrDown ? div.parentNode.children.item(k + 1) : div.parentNode.children.item(k + 1)) : (upOrDown ? div : div.nextSibling);
+          if (div && odd && insertBeforeNode) {
+            div.className = upOrDown ? (verticalOrHorizontal ? "down" : "left") : (verticalOrHorizontal ? "up" : "right");
+            odd.className = upOrDown ? (verticalOrHorizontal ? "up" : "right") : (verticalOrHorizontal ? "down" : "left");
+            div.parentNode.replaceChild(div, odd);
+            div.parentNode.insertBefore(odd, insertBeforeNode);
+            setTimeout(function() {
+              div.className = "animating";
+              odd.className = "animating";
+            }, 0);
+            return odd;
+          }
         };
       };
-      var moveRight = leftRightMaker(true);
-      var moveLeft = leftRightMaker(false);
-      var moveUp = upDownMaker(false);
-      var moveDown = upDownMaker(true);
+      var moveRight = upDownMaker(true, false);
+      var moveLeft = upDownMaker(false, false);
+      var moveUp = upDownMaker(true, true);
+      var moveDown = upDownMaker(false, true);
     </script>
   </head>
   <body>
