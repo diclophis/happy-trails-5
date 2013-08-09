@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <style>
+      #level {
+        border: 1px solid blue;
+        width: 306px;
+        height: 306px;
+      }
+      #level div {
+        border: 1px solid red;
+        width: 100px;
+        height: 100px;
+        float: left;
+        position: relative;
+      }
+      #level div.left {
+        left: -102px;
+      }
+      #level div.right {
+        left: 102px;
+      }
+      #level div.up {
+        top: -102px;
+      }
+      #level div.down {
+        top: 102px;
+      }
+      #level div.animating {
+        transition: all 5s;
+        top: 0;
+        left: 0;
+      }
+      #blank {
+        background-color: black;
+      }
+    </style>
+    <script>
+      var leftRightMaker = function(leftOrRight) {
+        return function(id) {
+          var div = document.getElementById(id);
+          var odd = leftOrRight ? div.nextSibling : div.previousSibling;
+          var insertBeforeNode = leftOrRight ? div : div.nextSibling;
+          div.className = leftOrRight ? "left" : "right";
+          odd.className = leftOrRight ? "right" : "left";
+          div.parentNode.replaceChild(div, odd);
+          div.parentNode.insertBefore(odd, insertBeforeNode);
+          setTimeout(function() {
+            div.className = "animating";
+            odd.className = "animating";
+          }, 0);
+          return odd;
+        };
+      };
+      var upDownMaker = function(upOrDown) {
+        return function(id) {
+          var div = document.getElementById(id);
+          var k = 0;
+          var e = div;
+          while (e = e.previousSibling) { ++k;}
+          var odd = upOrDown ? div.parentNode.children.item(k + 3) : div.parentNode.children.item(k - 3);
+          var insertBeforeNode = upOrDown ? div.nextSibling : div.nextSibling;
+          div.className = "";
+          odd.className = "";
+          div.className = upOrDown ? "up" : "down";
+          odd.className = upOrDown ? "down" : "up";
+          div.parentNode.replaceChild(div, odd);
+          div.parentNode.insertBefore(odd, insertBeforeNode);
+          setTimeout(function() {
+            div.className = "animating";
+            odd.className = "animating";
+          }, 0);
+          return odd;
+        };
+      };
+      var moveRight = leftRightMaker(true);
+      var moveLeft = leftRightMaker(false);
+      var moveUp = upDownMaker(false);
+      var moveDown = upDownMaker(true);
+    </script>
+  </head>
+  <body>
+    <div id="level"><div id="blank"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div id="player">
+    </div>
+    <div id="enemy">
+    </div>
+  </body>
+</html>
