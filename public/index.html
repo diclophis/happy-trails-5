@@ -55,6 +55,8 @@
     </div>
     <div id="enemy">
     </div>
+    <div id="debug">
+    </div>
     <script>
       var level = document.getElementById("level");
       var blank = document.getElementById("blank");
@@ -133,6 +135,7 @@
       };
       var onDivMove = function(e) {
         var touched = document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
+        debug.innerHTML = indexOf(touched) + ": " + touched.className + "<br/>" + debug.innerHTML;
         if (animating) {
         } else {
           //console.log(touched == blank, lastTouched == odd);
