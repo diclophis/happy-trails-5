@@ -16,8 +16,6 @@
         background-size: 100% 100%;
         -webkit-transform: translate3d(0px, 0px, 0px);
         transform: translate3d(0px, 0px, 0px);
-        -webkit-transition: all 0.1s linear;
-        transition: all 0.1s linear;
       }
       #level div#blank {
         background: black;
@@ -42,6 +40,8 @@
       #level div.animating {
         -webkit-transform: translate3d(0px, 0px, 0px);
         transform: translate3d(0px, 0px, 0px);
+        transition: all 0.1s linear;
+        -webkit-transition: all 0.1s linear;
       }
     </style>
     <script>
@@ -51,18 +51,18 @@
         var width = 3;
         var height = 3;
         var odd = null;
-        var swap = function(div, index, upOrDown, verticalOrHorizontal) {
-          odd = div.parentNode.children.item(index);
-          var insertBeforeNode = (odd.nextSibling == div) ? odd : odd.nextSibling;
-          if (div.className == "" && odd.className == "") {
-            div.parentNode.replaceChild(odd, div);
-            insertBeforeNode ? odd.parentNode.insertBefore(div, insertBeforeNode) : odd.parentNode.appendChild(div);
-            div.className = upOrDown ? (verticalOrHorizontal ? "down" : "left") : (verticalOrHorizontal ? "up" : "right");
+        var swap = function(index, upOrDown, verticalOrHorizontal) {
+          odd = level.children.item(index);
+          var insertBeforeNode = (odd.nextSibling == blank) ? odd : odd.nextSibling;
+          if (blank.className == "") {
+            level.replaceChild(odd, blank);
+            insertBeforeNode ? odd.parentNode.insertBefore(blank, insertBeforeNode) : odd.parentNode.appendChild(blank);
+            blank.className = upOrDown ? (verticalOrHorizontal ? "down" : "left") : (verticalOrHorizontal ? "up" : "right");
             odd.className = upOrDown ? (verticalOrHorizontal ? "up" : "right") : (verticalOrHorizontal ? "down" : "left");
             setTimeout(function() {
-              div.className = div.className + " animating";
-              odd.className = div.className + " animating";
-            }, 0);
+              blank.className = blank.className + " animating";
+              odd.className = odd.className + " animating";
+            }, 16);
           }
         };
         var indexOf = function(t) {
@@ -81,7 +81,7 @@
             y += dy;
             if ((dx != 0 && (x) < 3 && x > -1) || (dy != 0 && (y) < 3 && y > -1)) {
               var index = (x) + ((y) * width);
-              swap(blank, index, upOrDown, verticalOrHorizontal);
+              swap(index, upOrDown, verticalOrHorizontal);
             }
           };
         };
@@ -91,12 +91,10 @@
         var moveDown = upDownMaker(false, true);
         var completeTransition = function(e) {
           console.log("wtf");
-          blank.className = "";
           odd.className = "";
+          blank.className = "";
         };
-        blank.addEventListener("webkitTransitionEnd", completeTransition);
-        blank.addEventListener("transitionend", completeTransition);
-        level.addEventListener('pointerdown', function(e) {
+        var onDivClick = function(e) {
           var k = indexOf(e.target);
           var x = k % width;
           var y = (k - x) / width;
@@ -110,9 +108,14 @@
             xb += dx;
             yb += dy;
             var index = (xb) + ((yb) * width);
-            swap(blank, index, (dx != 0) ? one == 1 : one == -1, dx == 0);
+            swap(index, (dx != 0) ? one == 1 : one == -1, dx == 0);
           }
-        });
+          return false;
+        };
+        blank.addEventListener("webkitTransitionEnd", completeTransition);
+        blank.addEventListener("transitionend", completeTransition);
+        level.addEventListener('touchstart', onDivClick);
+        level.addEventListener('mousedown', onDivClick);
         window.addEventListener('keyup', function(e) {
         console.log(e.keyCode);
           switch(e.keyCode) {
@@ -132,7 +135,7 @@
         });
       });
     </script>
-    <script src="polymer.min.js"></script>
+    <script x-src="polymer.min.js"></script>
   </head>
   <body>
     <div id="level" touch-action="none"><div id="blank"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
