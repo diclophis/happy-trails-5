@@ -6,6 +6,7 @@
         width: 306px;
         height: 306px;
         background: black;
+        z-index: 1;
       }
       #level div {
         border: 1px solid red;
@@ -14,10 +15,12 @@
         float: left;
         position: relative;
         background: url(ns-ew.png) top left / 100% 100%;
+        z-index: 3;
       }
       #level div#blank {
+        border: 1px solid black;
         background: black;
-        z-index: -1;
+        z-index: 2;
       }
       #level div.left {
         -webkit-transform: translate3d(-102px, 0, 0);
@@ -38,17 +41,32 @@
     </style>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        document.addEventListener("webkitTransitionEnd", function(e) {
-          e.target.className = "";
-        });
+        var level = document.getElementById("level");
+        var blank = document.getElementById("blank");
+        var width = 3;
+        var height = 3;
+        var swap = function(div, index, upOrDown, verticalOrHorizontal) {
+          var odd = div.parentNode.children.item(index);
+          var insertBeforeNode = (odd.nextSibling == div) ? odd : odd.nextSibling;
+          if (div.className == "" && odd.className == "") {
+            div.parentNode.replaceChild(odd, div);
+            insertBeforeNode ? odd.parentNode.insertBefore(div, insertBeforeNode) : odd.parentNode.appendChild(div);
+            div.className = upOrDown ? (verticalOrHorizontal ? "down" : "left") : (verticalOrHorizontal ? "up" : "right");
+            odd.className = upOrDown ? (verticalOrHorizontal ? "up" : "right") : (verticalOrHorizontal ? "down" : "left");
+            setTimeout(function() {
+              div.className = div.className + " animating";
+              odd.className = div.className + " animating";
+            }, 0);
+          }
+        };
+        var indexOf = function(t) {
+          var k = 0;
+          while (t = t.previousSibling) { ++k;}
+          return k;
+        };
         var upDownMaker = function(upOrDown, verticalOrHorizontal) {
-          return function(id) {
-            var div = document.getElementById(id);
-            var width = 3;
-            var height = 3;
-            var k = 0;
-            var e = div;
-            while (e = e.previousSibling) { ++k;}
+          return function() {
+            var k = indexOf(blank);
             var x = k % width;
             var y = (k - x) / width;
             var dx = verticalOrHorizontal ? 0 : (upOrDown ? 1 : -1);
@@ -57,22 +75,7 @@
             y += dy;
             if ((dx != 0 && (x) < 3 && x > -1) || (dy != 0 && (y) < 3 && y > -1)) {
               var index = (x) + ((y) * width);
-              var odd = div.parentNode.children.item(index);
-              var insertBeforeNode = odd.nextSibling;
-              if (insertBeforeNode == div) {
-                insertBeforeNode = odd;
-              }
-              if (div.className == "" && odd.className == "") {
-                div.parentNode.replaceChild(odd, div);
-                insertBeforeNode ? odd.parentNode.insertBefore(div, insertBeforeNode) : odd.parentNode.appendChild(div);
-                div.className = upOrDown ? (verticalOrHorizontal ? "down" : "left") : (verticalOrHorizontal ? "up" : "right");
-                odd.className = upOrDown ? (verticalOrHorizontal ? "up" : "right") : (verticalOrHorizontal ? "down" : "left");
-                setTimeout(function() {
-                  div.className = div.className + " animating";
-                  odd.className = div.className + " animating";
-                }, 0);
-                return odd;
-              }
+              swap(blank, index, upOrDown, verticalOrHorizontal);
             }
           };
         };
@@ -80,27 +83,48 @@
         var moveLeft = upDownMaker(false, false);
         var moveUp = upDownMaker(true, true);
         var moveDown = upDownMaker(false, true);
+        document.addEventListener("webkitTransitionEnd", function(e) {
+          e.target.className = "";
+        });
+        level.addEventListener('pointerdown', function(e) {
+          var k = indexOf(e.target);
+          var x = k % width;
+          var y = (k - x) / width;
+          var kb = indexOf(blank);
+          var xb = kb % width;
+          var yb = (kb - xb) / width;
+          var dx = (x - xb);
+          var dy = (y - yb);
+          var one = ((dx) + (dy));
+          if (1 == one || -1 == one) {
+            xb += dx;
+            yb += dy;
+            var index = (xb) + ((yb) * width);
+            swap(blank, index, (dx != 0) ? one == 1 : one == -1, dx == 0);
+          }
+        });
         window.addEventListener('keyup', function(e) {
           switch(e.keyCode) {
             case 38:
-              moveUp("blank");
+              moveUp();
               break;
             case 39:
-              moveRight("blank");
+              moveRight();
               break;
             case 40:
-              moveDown("blank");
+              moveDown();
               break;
             case 37:
-              moveLeft("blank");
+              moveLeft();
               break;
           }
         });
       });
     </script>
+    <script src="polymer.min.js"></script>
   </head>
   <body>
-    <div id="level"><div id="blank"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div id="level" touch-action="none"><div id="blank"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     <div id="player">
     </div>
     <div id="enemy">
