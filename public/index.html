@@ -104,13 +104,9 @@
         }
       };
       var completeTransition = function(e) {
-        odd = null;
         setTimeout(function() {
+          odd = null;
           animating = false;
-          //if (saveClick) {
-          //  processClick(saveClick);
-          //  saveClick = null;
-          //}
         }, frameTimeout);
       };
       var processClick = function(target) {
@@ -133,8 +129,8 @@
       var onDivClick = function(e) {
         //saveClick = null;
         if (animating) {
-          blank.className = blank.className + " faster";
-          odd.className = odd.className + " faster";
+          //blank.className = blank.className + " faster";
+          //odd.className = odd.className + " faster";
           //if (e.target != odd) {
           //  saveClick = e.target;
           //}
@@ -165,10 +161,11 @@
       blank.addEventListener("webkitTransitionEnd", completeTransition);
       blank.addEventListener("transitionend", completeTransition);
       if ('ontouchstart' in document.documentElement) {
-        //level.addEventListener('touchstart', onDivClick);
-        level.addEventListener('touchmove', onDivClick);
+        level.addEventListener('touchstart', onDivClick);
+        //level.addEventListener('touchmove', onDivClick);
       } else {
         level.addEventListener('click', onDivClick);
+        //level.addEventListener('mousemove', onDivClick);
       }
       window.addEventListener('keyup', onKeyUp);
     </script>
