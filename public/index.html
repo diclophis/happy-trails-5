@@ -54,8 +54,9 @@
         -webkit-transition: all 0.001s linear;
       }
     </style>
+    <script src="polymer.min.js"></script>
   </head>
-  <body>
+  <body touch-action="none">
     <div id="level"><div id="blank"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     <div id="player">
     </div>
@@ -127,19 +128,12 @@
         }
       };
       var onDivClick = function(e) {
-        //saveClick = null;
         if (animating) {
-          //blank.className = blank.className + " faster";
-          //odd.className = odd.className + " faster";
-          //if (e.target != odd) {
-          //  saveClick = e.target;
-          //}
         } else {
-          if (e.target != odd) {
+          if (e.target != odd) { // && e.fromElement == blank) {
             processClick(e.target);
           }
         }
-
         return false;
       };
       var onKeyUp = function(e) {
@@ -167,6 +161,7 @@
         level.addEventListener('click', onDivClick);
         //level.addEventListener('mousemove', onDivClick);
       }
+      //document.addEventListener('pointerout', onDivClick);
       window.addEventListener('keyup', onKeyUp);
     </script>
   </body>
