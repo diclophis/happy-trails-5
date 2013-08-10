@@ -1,5 +1,9 @@
+<!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
+    <title>happytrails5</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
     <style>
       #level {
         width: 300px;
@@ -43,105 +47,130 @@
         transition: all 0.1s linear;
         -webkit-transition: all 0.1s linear;
       }
+      #level div.faster {
+        -webkit-transform: translate3d(0px, 0px, 1px);
+        transform: translate3d(0px, 0px, 1px);
+        transition: all 0.001s linear;
+        -webkit-transition: all 0.001s linear;
+      }
     </style>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        var level = document.getElementById("level");
-        var blank = document.getElementById("blank");
-        var width = 3;
-        var height = 3;
-        var odd = null;
-        var swap = function(index, upOrDown, verticalOrHorizontal) {
-          odd = level.children.item(index);
-          var insertBeforeNode = (odd.nextSibling == blank) ? odd : odd.nextSibling;
-          if (blank.className == "") {
-            level.replaceChild(odd, blank);
-            insertBeforeNode ? odd.parentNode.insertBefore(blank, insertBeforeNode) : odd.parentNode.appendChild(blank);
-            blank.className = upOrDown ? (verticalOrHorizontal ? "down" : "left") : (verticalOrHorizontal ? "up" : "right");
-            odd.className = upOrDown ? (verticalOrHorizontal ? "up" : "right") : (verticalOrHorizontal ? "down" : "left");
-            setTimeout(function() {
-              blank.className = blank.className + " animating";
-              odd.className = odd.className + " animating";
-            }, 16);
-          }
-        };
-        var indexOf = function(t) {
-          var k = 0;
-          while (t = t.previousSibling) { ++k;}
-          return k;
-        };
-        var upDownMaker = function(upOrDown, verticalOrHorizontal) {
-          return function() {
-            var k = indexOf(blank);
-            var x = k % width;
-            var y = (k - x) / width;
-            var dx = verticalOrHorizontal ? 0 : (upOrDown ? 1 : -1);
-            var dy = verticalOrHorizontal ? (upOrDown ? -1 : 1) : 0;
-            x += dx;
-            y += dy;
-            if ((dx != 0 && (x) < 3 && x > -1) || (dy != 0 && (y) < 3 && y > -1)) {
-              var index = (x) + ((y) * width);
-              swap(index, upOrDown, verticalOrHorizontal);
-            }
-          };
-        };
-        var moveRight = upDownMaker(true, false);
-        var moveLeft = upDownMaker(false, false);
-        var moveUp = upDownMaker(true, true);
-        var moveDown = upDownMaker(false, true);
-        var completeTransition = function(e) {
-          console.log("wtf");
-          odd.className = "";
-          blank.className = "";
-        };
-        var onDivClick = function(e) {
-          var k = indexOf(e.target);
-          var x = k % width;
-          var y = (k - x) / width;
-          var kb = indexOf(blank);
-          var xb = kb % width;
-          var yb = (kb - xb) / width;
-          var dx = (x - xb);
-          var dy = (y - yb);
-          var one = ((dx) + (dy));
-          if ((Math.abs(dx) < 2 && Math.abs(dy) < 2) && (1 == one || -1 == one)) {
-            xb += dx;
-            yb += dy;
-            var index = (xb) + ((yb) * width);
-            swap(index, (dx != 0) ? one == 1 : one == -1, dx == 0);
-          }
-          return false;
-        };
-        blank.addEventListener("webkitTransitionEnd", completeTransition);
-        blank.addEventListener("transitionend", completeTransition);
-        level.addEventListener('touchstart', onDivClick);
-        level.addEventListener('mousedown', onDivClick);
-        window.addEventListener('keyup', function(e) {
-        console.log(e.keyCode);
-          switch(e.keyCode) {
-            case 38:
-              moveDown();
-              break;
-            case 39:
-              moveLeft();
-              break;
-            case 40:
-              moveUp();
-              break;
-            case 37:
-              moveRight();
-              break;
-          }
-        });
-      });
-    </script>
-    <script x-src="polymer.min.js"></script>
   </head>
   <body>
-    <div id="level" touch-action="none"><div id="blank"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div id="level"><div id="blank"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     <div id="player">
     </div>
     <div id="enemy">
     </div>
+    <script>
+      var level = document.getElementById("level");
+      var blank = document.getElementById("blank");
+      var width = 3;
+      var height = 3;
+      var odd = null;
+      var animating = false;
+      var frameTimeout = 33;
+      var saveClick = null;
+      var swap = function(index, upOrDown, verticalOrHorizontal) {
+        odd = level.children.item(index);
+        var insertBeforeNode = (odd.nextSibling == blank) ? odd : odd.nextSibling;
+        if (animating == false) {
+          level.replaceChild(odd, blank);
+          insertBeforeNode ? odd.parentNode.insertBefore(blank, insertBeforeNode) : odd.parentNode.appendChild(blank);
+          blank.className = upOrDown ? (verticalOrHorizontal ? "down" : "left") : (verticalOrHorizontal ? "up" : "right");
+          odd.className = upOrDown ? (verticalOrHorizontal ? "up" : "right") : (verticalOrHorizontal ? "down" : "left");
+          animating = true;
+          setTimeout(function() {
+            blank.className = blank.className + " animating";
+            odd.className = odd.className + " animating";
+          }, frameTimeout);
+        } 
+      };
+      var indexOf = function(t) {
+        var k = 0;
+        while (t = t.previousSibling) { ++k;}
+        return k;
+      };
+      var upDownMaker = function(upOrDown, verticalOrHorizontal) {
+        var k = indexOf(blank);
+        var x = k % width;
+        var y = (k - x) / width;
+        var dx = verticalOrHorizontal ? 0 : (upOrDown ? 1 : -1);
+        var dy = verticalOrHorizontal ? (upOrDown ? -1 : 1) : 0;
+        x += dx;
+        y += dy;
+        if ((dx != 0 && (x) < 3 && x > -1) || (dy != 0 && (y) < 3 && y > -1)) {
+          var index = (x) + ((y) * width);
+          swap(index, upOrDown, verticalOrHorizontal);
+        }
+      };
+      var completeTransition = function(e) {
+        odd = null;
+        setTimeout(function() {
+          animating = false;
+          //if (saveClick) {
+          //  processClick(saveClick);
+          //  saveClick = null;
+          //}
+        }, frameTimeout);
+      };
+      var processClick = function(target) {
+        var k = indexOf(target);
+        var x = k % width;
+        var y = (k - x) / width;
+        var kb = indexOf(blank);
+        var xb = kb % width;
+        var yb = (kb - xb) / width;
+        var dx = (x - xb);
+        var dy = (y - yb);
+        var one = ((dx) + (dy));
+        if ((Math.abs(dx) < 2 && Math.abs(dy) < 2) && (1 == one || -1 == one)) {
+          xb += dx;
+          yb += dy;
+          var index = (xb) + ((yb) * width);
+          swap(index, (dx != 0) ? one == 1 : one == -1, dx == 0);
+        }
+      };
+      var onDivClick = function(e) {
+        //saveClick = null;
+        if (animating) {
+          blank.className = blank.className + " faster";
+          odd.className = odd.className + " faster";
+          //if (e.target != odd) {
+          //  saveClick = e.target;
+          //}
+        } else {
+          if (e.target != odd) {
+            processClick(e.target);
+          }
+        }
+
+        return false;
+      };
+      var onKeyUp = function(e) {
+        switch(e.keyCode) {
+          case 38:
+            upDownMaker(false, true);
+            break;
+          case 39:
+            upDownMaker(false, false);
+            break;
+          case 40:
+            upDownMaker(true, true);
+            break;
+          case 37:
+            upDownMaker(true, false);
+            break;
+        }
+      };
+      blank.addEventListener("webkitTransitionEnd", completeTransition);
+      blank.addEventListener("transitionend", completeTransition);
+      if ('ontouchstart' in document.documentElement) {
+        //level.addEventListener('touchstart', onDivClick);
+        level.addEventListener('touchmove', onDivClick);
+      } else {
+        level.addEventListener('click', onDivClick);
+      }
+      window.addEventListener('keyup', onKeyUp);
+    </script>
   </body>
 </html>
