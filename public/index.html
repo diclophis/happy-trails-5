@@ -47,12 +47,6 @@
         transition: all 0.1s linear;
         -webkit-transition: all 0.1s linear;
       }
-      #level div.faster {
-        -webkit-transform: translate3d(0px, 0px, 1px);
-        transform: translate3d(0px, 0px, 1px);
-        transition: all 0.001s linear;
-        -webkit-transition: all 0.001s linear;
-      }
     </style>
   </head>
   <body>
@@ -70,6 +64,7 @@
       var animating = false;
       var frameTimeout = 33;
       var saveClick = null;
+      var lastTouched = null;
       var swap = function(index, upOrDown, verticalOrHorizontal) {
         odd = level.children.item(index);
         var insertBeforeNode = (odd.nextSibling == blank) ? odd : odd.nextSibling;
@@ -105,7 +100,7 @@
       };
       var completeTransition = function(e) {
         setTimeout(function() {
-          odd = null;
+          //odd = null;
           animating = false;
         }, frameTimeout);
       };
@@ -129,10 +124,26 @@
       var onDivClick = function(e) {
         if (animating) {
         } else {
-          if (e.target != odd) { // && e.fromElement == blank) {
-            processClick(e.target);
+          //if (e.target != odd) { // && e.fromElement == blank) {
+            //processClick(e.target);
+          //}
+        }
+        //lastTouched = e.target;
+        return false;
+      };
+      var onDivMove = function(e) {
+        var touched = document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
+        if (animating) {
+        } else {
+          //console.log(touched == blank, lastTouched == odd);
+          if ((touched == blank && lastTouched == odd)) {
+            //console.log(odd, "WTF");
+            processClick(odd);
+          } else if (touched != odd) {
+            processClick(touched);
           }
         }
+        lastTouched = touched;
         return false;
       };
       var onKeyUp = function(e) {
@@ -153,13 +164,13 @@
       };
       blank.addEventListener("webkitTransitionEnd", completeTransition);
       blank.addEventListener("transitionend", completeTransition);
-      if ('ontouchstart' in document.documentElement) {
-        level.addEventListener('touchstart', onDivClick);
+        level.addEventListener('touchmove', onDivMove);
         //level.addEventListener('touchmove', onDivClick);
+      if ('ontouchstart' in document.documentElement) {
       } else {
-        level.addEventListener('click', onDivClick);
         //level.addEventListener('mousemove', onDivClick);
       }
+        level.addEventListener('click', onDivClick);
       //document.addEventListener('pointerout', onDivClick);
       window.addEventListener('keyup', onKeyUp);
     </script>
