@@ -2,41 +2,46 @@
   <head>
     <style>
       #level {
-        border: 1px solid blue;
-        width: 306px;
-        height: 306px;
+        width: 300px;
+        height: 300px;
         background: black;
-        z-index: 1;
       }
       #level div {
-        border: 1px solid red;
         width: 100px;
         height: 100px;
         float: left;
         position: relative;
-        background: url(ns-ew.png) top left / 100% 100%;
-        z-index: 3;
+        background-image: url(ns-ew.png);
+        background-position: top left;
+        background-size: 100% 100%;
+        -webkit-transform: translate3d(0px, 0px, 0px);
+        transform: translate3d(0px, 0px, 0px);
+        -webkit-transition: all 0.1s linear;
+        transition: all 0.1s linear;
       }
       #level div#blank {
-        border: 1px solid black;
         background: black;
-        z-index: 2;
+        opacity: 0;
       }
       #level div.left {
-        -webkit-transform: translate3d(-102px, 0, 0);
+        -webkit-transform: translate3d(-100px, 0, 0);
+        transform: translate3d(-100px, 0, 0);
       }
       #level div.right {
-        -webkit-transform: translate3d(102px, 0, 0);
+        -webkit-transform: translate3d(100px, 0, 0);
+        transform: translate3d(100px, 0, 0);
       }
       #level div.up {
-        -webkit-transform: translate3d(0, -102px, 0);
+        -webkit-transform: translate3d(0, -100px, 0);
+        transform: translate3d(0, -100px, 0);
       }
       #level div.down {
-        -webkit-transform: translate3d(0, 102px, 0);
+        -webkit-transform: translate3d(0, 100px, 0);
+        transform: translate3d(0, 100px, 0);
       }
       #level div.animating {
         -webkit-transform: translate3d(0px, 0px, 0px);
-        transition: all 0.1s linear;
+        transform: translate3d(0px, 0px, 0px);
       }
     </style>
     <script>
@@ -45,8 +50,9 @@
         var blank = document.getElementById("blank");
         var width = 3;
         var height = 3;
+        var odd = null;
         var swap = function(div, index, upOrDown, verticalOrHorizontal) {
-          var odd = div.parentNode.children.item(index);
+          odd = div.parentNode.children.item(index);
           var insertBeforeNode = (odd.nextSibling == div) ? odd : odd.nextSibling;
           if (div.className == "" && odd.className == "") {
             div.parentNode.replaceChild(odd, div);
@@ -83,9 +89,13 @@
         var moveLeft = upDownMaker(false, false);
         var moveUp = upDownMaker(true, true);
         var moveDown = upDownMaker(false, true);
-        document.addEventListener("webkitTransitionEnd", function(e) {
-          e.target.className = "";
-        });
+        var completeTransition = function(e) {
+          console.log("wtf");
+          blank.className = "";
+          odd.className = "";
+        };
+        blank.addEventListener("webkitTransitionEnd", completeTransition);
+        blank.addEventListener("transitionend", completeTransition);
         level.addEventListener('pointerdown', function(e) {
           var k = indexOf(e.target);
           var x = k % width;
@@ -96,7 +106,7 @@
           var dx = (x - xb);
           var dy = (y - yb);
           var one = ((dx) + (dy));
-          if (1 == one || -1 == one) {
+          if ((Math.abs(dx) < 2 && Math.abs(dy) < 2) && (1 == one || -1 == one)) {
             xb += dx;
             yb += dy;
             var index = (xb) + ((yb) * width);
@@ -104,18 +114,19 @@
           }
         });
         window.addEventListener('keyup', function(e) {
+        console.log(e.keyCode);
           switch(e.keyCode) {
             case 38:
-              moveUp();
-              break;
-            case 39:
-              moveRight();
-              break;
-            case 40:
               moveDown();
               break;
-            case 37:
+            case 39:
               moveLeft();
+              break;
+            case 40:
+              moveUp();
+              break;
+            case 37:
+              moveRight();
               break;
           }
         });
