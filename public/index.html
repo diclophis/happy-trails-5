@@ -55,8 +55,6 @@
     </div>
     <div id="enemy">
     </div>
-    <div id="debug">
-    </div>
     <script>
       var level = document.getElementById("level");
       var blank = document.getElementById("blank");
@@ -102,7 +100,6 @@
       };
       var completeTransition = function(e) {
         setTimeout(function() {
-          //odd = null;
           animating = false;
         }, frameTimeout);
       };
@@ -124,23 +121,22 @@
         }
       };
       var onDivClick = function(e) {
+        e.preventDefault();
         if (animating) {
         } else {
-          //if (e.target != odd) { // && e.fromElement == blank) {
-            //processClick(e.target);
-          //}
+          processClick(e.target);
         }
-        //lastTouched = e.target;
         return false;
       };
       var onDivMove = function(e) {
+        e.preventDefault();
         var touched = document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
-        debug.innerHTML = indexOf(touched) + ": " + touched.className + "<br/>" + debug.innerHTML;
         if (animating) {
         } else {
           //console.log(touched == blank, lastTouched == odd);
+          // || (touched == odd && lastTouched == blank)) {
+          // if target changed and not changed to blank, reset the whole thing?
           if ((touched == blank && lastTouched == odd)) {
-            //console.log(odd, "WTF");
             processClick(odd);
           } else if (touched != odd) {
             processClick(touched);
@@ -167,14 +163,8 @@
       };
       blank.addEventListener("webkitTransitionEnd", completeTransition);
       blank.addEventListener("transitionend", completeTransition);
-        level.addEventListener('touchmove', onDivMove);
-        //level.addEventListener('touchmove', onDivClick);
-      if ('ontouchstart' in document.documentElement) {
-      } else {
-        //level.addEventListener('mousemove', onDivClick);
-      }
-        level.addEventListener('click', onDivClick);
-      //document.addEventListener('pointerout', onDivClick);
+      level.addEventListener('touchmove', onDivMove);
+      level.addEventListener('click', onDivClick);
       window.addEventListener('keyup', onKeyUp);
     </script>
   </body>
