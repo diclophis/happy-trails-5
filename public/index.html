@@ -5,13 +5,17 @@
     <title>happytrails5</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
     <style>
-      html, body {
+      html, body, div {
         margin: 0;
         padding: 0;
         background: black;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);  
       }
       #level {
-        margin-top: 1em;
+        margin-top: 0.5em;
         margin-left: 25%;
         width: 50%;
         position: absolute;
@@ -49,8 +53,8 @@
       #level div.animating {
         -webkit-transform: translate3d(0, 0, 0);
         transform: translate3d(0, 0, 0);
-        transition: all 0.1s linear;
-        -webkit-transition: all 0.1s linear;
+        transition: transform 0.125s linear;
+        -webkit-transition: -webkit-transform 0.125s linear;
       }
     </style>
   </head>
@@ -72,29 +76,33 @@
       var dx = null;
       var dy = null;
       var index = null;
+      var smash = function() {
+        blank.className = "";
+        odd.className = "";
+        level.offsetHeight;
+        animating = false;
+      };
       var swap = function(index, upOrDown, verticalOrHorizontal) {
-        odd = level.children.item(index);
-        var insertBeforeNode = (odd.nextSibling == blank) ? odd : odd.nextSibling;
         if (animating == false) {
+          odd = level.children.item(index);
+          var insertBeforeNode = (odd.nextSibling == blank) ? odd : odd.nextSibling;
           level.replaceChild(odd, blank);
           insertBeforeNode ? odd.parentNode.insertBefore(blank, insertBeforeNode) : odd.parentNode.appendChild(blank);
           blank.className = upOrDown ? (verticalOrHorizontal ? "down" : "left") : (verticalOrHorizontal ? "up" : "right");
           odd.className = upOrDown ? (verticalOrHorizontal ? "up" : "right") : (verticalOrHorizontal ? "down" : "left");
           animating = true;
-
-          //setTimeout(function() {
-          blank.offsetHeight;
-          odd.offsetHeight;
-
+          level.offsetHeight;
           blank.className = blank.className + " animating";
           odd.className = odd.className + " animating";
-          //}, frameTimeout);
-        } 
+        } else {
+          //smash();
+        }
       };
       var completeTransition = function(e) {
-        //setTimeout(function() {
-          animating = false;
-        //}, frameTimeout);
+        smash();
+        //animating = false;
+        //blank.className = "";
+        //odd.className = "";
       };
       var indexOf = function(t) {
         k = 0;
@@ -133,27 +141,32 @@
       };
       var onDivClick = function(e) {
         e.preventDefault();
-        if (animating) {
-        } else {
+        //if (animating) {
+        //  smash();
+        //}
+        //else {
           processClick(e.target);
-        }
+        //}
         return false;
       };
       var onDivMove = function(e) {
         e.preventDefault();
-        touched = document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
         if (animating) {
         } else {
+          touched = document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
           if ((touched == blank && lastTouched == odd)) {
             processClick(odd);
           } else if (touched != odd) {
             processClick(touched);
           }
+          lastTouched = touched;
         }
-        lastTouched = touched;
         return false;
       };
       var onKeyUp = function(e) {
+        //if (animating) {
+        //  smash();
+        //}
         switch(e.keyCode) {
           case 38:
             upDownMaker(false, true);
