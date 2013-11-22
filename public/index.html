@@ -61,6 +61,13 @@
       //var frameTimeout = 33;
       var saveClick = null;
       var lastTouched = null;
+      var touched = null;
+      var k = null;
+      var x = null;
+      var y = null;
+      var dx = null;
+      var dy = null;
+      var index = null;
       var swap = function(index, upOrDown, verticalOrHorizontal) {
         odd = level.children.item(index);
         var insertBeforeNode = (odd.nextSibling == blank) ? odd : odd.nextSibling;
@@ -86,20 +93,20 @@
         //}, frameTimeout);
       };
       var indexOf = function(t) {
-        var k = 0;
+        k = 0;
         while (t = t.previousSibling) { ++k;}
         return k;
       };
       var upDownMaker = function(upOrDown, verticalOrHorizontal) {
-        var k = indexOf(blank);
-        var x = k % width;
-        var y = (k - x) / width;
-        var dx = verticalOrHorizontal ? 0 : (upOrDown ? 1 : -1);
-        var dy = verticalOrHorizontal ? (upOrDown ? -1 : 1) : 0;
+        k = indexOf(blank);
+        x = k % width;
+        y = (k - x) / width;
+        dx = verticalOrHorizontal ? 0 : (upOrDown ? 1 : -1);
+        dy = verticalOrHorizontal ? (upOrDown ? -1 : 1) : 0;
         x += dx;
         y += dy;
         if ((dx != 0 && (x) < 3 && x > -1) || (dy != 0 && (y) < 3 && y > -1)) {
-          var index = (x) + ((y) * width);
+          index = (x) + ((y) * width);
           swap(index, upOrDown, verticalOrHorizontal);
         }
       };
@@ -116,7 +123,7 @@
         if ((Math.abs(dx) < 2 && Math.abs(dy) < 2) && (1 == one || -1 == one)) {
           xb += dx;
           yb += dy;
-          var index = (xb) + ((yb) * width);
+          index = (xb) + ((yb) * width);
           swap(index, (dx != 0) ? one == 1 : one == -1, dx == 0);
         }
       };
@@ -130,12 +137,9 @@
       };
       var onDivMove = function(e) {
         e.preventDefault();
-        var touched = document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
+        touched = document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
         if (animating) {
         } else {
-          //console.log(touched == blank, lastTouched == odd);
-          // || (touched == odd && lastTouched == blank)) {
-          // if target changed and not changed to blank, reset the whole thing?
           if ((touched == blank && lastTouched == odd)) {
             processClick(odd);
           } else if (touched != odd) {
