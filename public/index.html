@@ -5,14 +5,19 @@
     <title>happytrails5</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
     <style>
-      #level {
-        width: 300px;
-        height: 300px;
+      html, body {
+        margin: 0;
+        padding: 0;
         background: black;
       }
+      #level {
+        margin-left: 33%;
+        width: 33%;
+        position: absolute;
+      }
       #level div {
-        width: 100px;
-        height: 100px;
+        width: 33%;
+        padding-top: 33%;
         float: left;
         position: relative;
         background-image: url(ns-ew.png);
@@ -22,30 +27,29 @@
         transform: translate3d(0px, 0px, 0px);
       }
       #level div#blank {
-        background: black;
         opacity: 0;
       }
       #level div.left {
-        -webkit-transform: translate3d(-100px, 0, 0);
-        transform: translate3d(-100px, 0, 0);
+        -webkit-transform: translate3d(-100%, 0, 0);
+        transform: translate3d(-100%, 0, 0);
       }
       #level div.right {
-        -webkit-transform: translate3d(100px, 0, 0);
-        transform: translate3d(100px, 0, 0);
+        -webkit-transform: translate3d(100%, 0, 0);
+        transform: translate3d(100%, 0, 0);
       }
       #level div.up {
-        -webkit-transform: translate3d(0, -100px, 0);
-        transform: translate3d(0, -100px, 0);
+        -webkit-transform: translate3d(0, -100%, 0);
+        transform: translate3d(0, -100%, 0);
       }
       #level div.down {
-        -webkit-transform: translate3d(0, 100px, 0);
-        transform: translate3d(0, 100px, 0);
+        -webkit-transform: translate3d(0, 100%, 0);
+        transform: translate3d(0, 100%, 0);
       }
       #level div.animating {
         -webkit-transform: translate3d(0px, 0px, 0px);
         transform: translate3d(0px, 0px, 0px);
-        transition: all 0.1s linear;
-        -webkit-transition: all 0.1s linear;
+        transition: all 0.334s linear;
+        -webkit-transition: all 0.334s linear;
       }
     </style>
   </head>
@@ -58,7 +62,6 @@
       var height = 3;
       var odd = null;
       var animating = false;
-      //var frameTimeout = 33;
       var saveClick = null;
       var lastTouched = null;
       var touched = null;
