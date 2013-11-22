@@ -50,10 +50,8 @@
     </style>
   </head>
   <body>
-    <div id="level"><div id="blank"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-    <div id="player">
-    </div>
-    <div id="enemy">
+    <div id="level">
+      <div id="blank"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     </div>
     <script>
       var level = document.getElementById("level");
@@ -62,7 +60,7 @@
       var height = 3;
       var odd = null;
       var animating = false;
-      var frameTimeout = 33;
+      //var frameTimeout = 33;
       var saveClick = null;
       var lastTouched = null;
       var swap = function(index, upOrDown, verticalOrHorizontal) {
@@ -74,11 +72,20 @@
           blank.className = upOrDown ? (verticalOrHorizontal ? "down" : "left") : (verticalOrHorizontal ? "up" : "right");
           odd.className = upOrDown ? (verticalOrHorizontal ? "up" : "right") : (verticalOrHorizontal ? "down" : "left");
           animating = true;
-          setTimeout(function() {
-            blank.className = blank.className + " animating";
-            odd.className = odd.className + " animating";
-          }, frameTimeout);
+
+          //setTimeout(function() {
+          blank.offsetHeight;
+          odd.offsetHeight;
+
+          blank.className = blank.className + " animating";
+          odd.className = odd.className + " animating";
+          //}, frameTimeout);
         } 
+      };
+      var completeTransition = function(e) {
+        //setTimeout(function() {
+          animating = false;
+        //}, frameTimeout);
       };
       var indexOf = function(t) {
         var k = 0;
@@ -97,11 +104,6 @@
           var index = (x) + ((y) * width);
           swap(index, upOrDown, verticalOrHorizontal);
         }
-      };
-      var completeTransition = function(e) {
-        setTimeout(function() {
-          animating = false;
-        }, frameTimeout);
       };
       var processClick = function(target) {
         var k = indexOf(target);
