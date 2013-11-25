@@ -1,0 +1,85 @@
+@image: url(http://placekitten.com/512/512);
+
+html, body, div {
+  margin: 0;
+  padding: 0;
+  background: black;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);  
+}
+
+#level {
+  margin-top: 0.5em;
+  margin-left: 25%;
+  width: 50%;
+  position: absolute;
+}
+
+#level div {
+  width: 33.3334%;
+  padding-top: 33.3334%;
+  float: left;
+  position: relative;
+  background-image: @image;
+  background-size: 300% 300%;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+#level div#blank {
+  opacity: 0;
+}
+
+#level div.left {
+  -webkit-transform: translate3d(-100%, 0, 0);
+  transform: translate3d(-100%, 0, 0);
+}
+
+#level div.right {
+  -webkit-transform: translate3d(100%, 0, 0);
+  transform: translate3d(100%, 0, 0);
+}
+
+#level div.up {
+  -webkit-transform: translate3d(0, -100%, 0);
+  transform: translate3d(0, -100%, 0);
+}
+
+#level div.down {
+  -webkit-transform: translate3d(0, 100%, 0);
+  transform: translate3d(0, 100%, 0);
+}
+
+#level div.animating {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.125s linear;
+  -webkit-transition: -webkit-transform 0.125s linear;
+}
+
+.tile-row(@row) {
+  @a: (@row * 3) + 1;
+  @b: (@row * 3) + 2;
+  @c: (@row * 3) + 3;
+
+  #tile-@{a} {
+    background-position: 0 -(100% * @row);
+  }
+
+  #tile-@{b} {
+    background-position: -(33.3334% * 3) -(100% * @row);
+  }
+
+  #tile-@{c} {
+    background-position: -(66.6667% * 3) -(100% * @row);
+  }
+}
+
+#level {
+  .tile-row(0);
+  .tile-row(1);
+  .tile-row(2);
+}
+

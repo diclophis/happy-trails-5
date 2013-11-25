@@ -4,67 +4,22 @@
     <meta charset="utf-8">
     <title>happytrails5</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
-    <style>
-      html, body, div {
-        margin: 0;
-        padding: 0;
-        background: black;
-        -moz-user-select: none;
-        -webkit-user-select: none;
-        -ms-user-select: none;
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);  
-      }
-      #level {
-        margin-top: 0.5em;
-        margin-left: 25%;
-        width: 50%;
-        position: absolute;
-      }
-      #level div {
-        width: 33.3334%;
-        padding-top: 33.3334%;
-        float: left;
-        position: relative;
-        background-image: url(ns-ew.png);
-        background-position: top left;
-        background-size: 100% 100%;
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-      }
-      #level div#blank {
-        opacity: 0;
-      }
-      #level div.left {
-        -webkit-transform: translate3d(-100%, 0, 0);
-        transform: translate3d(-100%, 0, 0);
-      }
-      #level div.right {
-        -webkit-transform: translate3d(100%, 0, 0);
-        transform: translate3d(100%, 0, 0);
-      }
-      #level div.up {
-        -webkit-transform: translate3d(0, -100%, 0);
-        transform: translate3d(0, -100%, 0);
-      }
-      #level div.down {
-        -webkit-transform: translate3d(0, 100%, 0);
-        transform: translate3d(0, 100%, 0);
-      }
-      #level div.animating {
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-        transition: transform 0.125s linear;
-        -webkit-transition: -webkit-transform 0.125s linear;
-      }
-    </style>
+    <link rel="stylesheet/less" type="text/css" href="style.less"/>
+    <script src="less-1.5.0.min.js"></script>
   </head>
   <body>
-    <div id="level"><div id="blank"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
     <script>
-      var level = document.getElementById("level");
-      var blank = document.getElementById("blank");
       var width = 3;
       var height = 3;
+      var level = document.createElement("div");
+      level.id = "level";
+      for (k=0; k<(width * height); k++) {
+        level.appendChild(document.createElement("div"));
+        level.children[k].id = "tile-" + (k+1);
+      }
+      level.children[0].id = "blank";
+      document.body.appendChild(level);
+      var blank = document.getElementById("blank");
       var odd = null;
       var animating = false;
       var saveClick = null;
@@ -100,9 +55,6 @@
       };
       var completeTransition = function(e) {
         smash();
-        //animating = false;
-        //blank.className = "";
-        //odd.className = "";
       };
       var indexOf = function(t) {
         k = 0;
@@ -141,12 +93,7 @@
       };
       var onDivClick = function(e) {
         e.preventDefault();
-        //if (animating) {
-        //  smash();
-        //}
-        //else {
-          processClick(e.target);
-        //}
+        processClick(e.target);
         return false;
       };
       var onDivMove = function(e) {
@@ -164,9 +111,6 @@
         return false;
       };
       var onKeyUp = function(e) {
-        //if (animating) {
-        //  smash();
-        //}
         switch(e.keyCode) {
           case 38:
             upDownMaker(false, true);
